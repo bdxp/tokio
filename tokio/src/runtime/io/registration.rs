@@ -100,8 +100,18 @@ impl Registration {
         self.handle().deregister_source(&self.shared, io)
     }
 
+    pub(crate) fn reregister(&self, io: &mut impl Source, interest: Interest) -> io::Result<()> {
+        self.handle()
+            .reregister_source(io, &self.shared, interest)
+    }
+
     pub(crate) fn clear_readiness(&self, event: ReadyEvent) {
         self.shared.clear_readiness(event);
+    }
+
+    pub(crate) fn clear_readiness_interest(&self, interest: Interest) {
+        let ev = self.shared.ready_event(interest);
+        self.shared.clear_readiness(ev);
     }
 
     // Uses the poll path, requiring the caller to ensure mutual exclusion for

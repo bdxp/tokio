@@ -130,6 +130,11 @@ impl<E: Source> PollEvented<E> {
         &self.registration
     }
 
+    #[cfg(any(feature = "net"))]
+    pub(crate) fn clear_readiness_interest(&mut self, interest: Interest) {
+        self.registration.clear_readiness_interest(interest)
+    }
+
     /// Deregisters the inner io from the registration and returns a Result containing the inner io.
     #[cfg(any(feature = "net", feature = "process"))]
     pub(crate) fn into_inner(mut self) -> io::Result<E> {
@@ -139,7 +144,7 @@ impl<E: Source> PollEvented<E> {
     }
 
     /// Re-register under new runtime with `interest`.
-    #[cfg(all(feature = "process", target_os = "linux"))]
+    #[cfg(any(feature = "net", all(feature = "process", target_os = "linux")))]
     pub(crate) fn reregister(&mut self, interest: Interest) -> io::Result<()> {
         let io = self.io.as_mut().unwrap(); // As io shouldn't ever be None, just unwrap here.
         let _ = self.registration.deregister(io);
