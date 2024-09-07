@@ -259,6 +259,18 @@ impl Handle {
         Ok(())
     }
 
+    pub(super) fn reregister_source(
+        &self,
+        source: &mut impl mio::event::Source,
+        shared: &Arc<ScheduledIo>,
+        interest: Interest,
+    ) -> io::Result<()> {
+        let token = shared.token();
+        self.registry.reregister(source, token, interest.to_mio())?;
+
+        Ok(())
+    }
+
     fn release_pending_registrations(&self) {
         if self.registrations.needs_release() {
             self.registrations.release(&mut self.synced.lock());

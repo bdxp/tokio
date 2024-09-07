@@ -1099,6 +1099,16 @@ impl TcpStream {
             .await
     }
 
+    /// Calls reregister on the underlying registration.
+    pub fn reregister(&mut self, interest: Interest) -> io::Result<()> {
+        self.io.reregister(interest)
+    }
+
+    /// Calls reregister on the underlying registration.
+    pub fn clear_readiness(&mut self, interest: Interest) {
+        self.io.clear_readiness_interest(interest)
+    }
+
     /// Shuts down the read, write, or both halves of this connection.
     ///
     /// This function will cause all pending and future I/O on the specified
